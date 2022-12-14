@@ -20,8 +20,6 @@ int LSM6DS33_test(void){
 		}
 
 }
-
-
 int LSM6DS33_testID(void){
 	uint8_t buffer1[1];
 	HAL_I2C_Mem_Read(&hi2c1, (0x6B)<<1, 0x0F, 1, buffer1, 1, 300);
@@ -35,6 +33,53 @@ int LSM6DS33_testID(void){
 
 
 }
+
+
+
+
+void LSM6DS33_init(void){
+
+
+	uint8_t data;
+
+
+	// ODR = 1000 (1.66 kHz (high performance)); FS_XL = 00 (+/-2 g full scale)
+	data = 0x80; // 0x80 = 0b10000000
+	HAL_I2C_Mem_Write	(	&hi2c1,
+							(0x6B)<<1,
+							0x10,// LSMDS_CTRL1_XL (10h)
+							1,
+							&data,
+							1,
+							100
+						);
+
+
+	 // ODR = 1000 (1.66 kHz (high performance)); FS_G = 00 (245 dps for DS33)
+	data = 0x80; // 0x80 = 0b10000000
+	HAL_I2C_Mem_Write	(	&hi2c1,
+							(0x6B)<<1,
+							0x11,//  CTRL2_G = (11h)
+							1,
+							&data,
+							1,
+							100
+						);
+
+	// IF_INC = 1 (automatically increment register address)
+	data = 0x04; // 0x04 = 0b00000100
+	HAL_I2C_Mem_Write	(	&hi2c1,
+							(0x6B)<<1,
+							0x12,//  CTRL2_G = (12h)
+							1,
+							&data,
+							1,
+							100
+						);
+
+
+}
+
 
 
 float LSM6DS33_Gyro_X(void){
@@ -60,12 +105,10 @@ float LSM6DS33_Gyro_X(void){
 						100);
 	gyroX = (OUTX_H_G << 8) | (OUTX_L_G);
 
-	gyroX = (float)gyroX /70; // GYRO_FS_2000
+	gyroX = (float)gyroX /8.75; // GYRO_FS_245
 
-	return (float) gyroX;
+	return (float) gyroX*0.02; // 19ms(0.019s) is while time in main
 }
-
-
 float LSM6DS33_Gyro_Y(void){
 
 
@@ -90,13 +133,11 @@ float LSM6DS33_Gyro_Y(void){
 						100);
 	gyroY = (OUTY_H_G << 8) | (OUTY_L_G);
 
-	gyroY = (float)gyroY /70; // GYRO_FS_2000
+	gyroY = (float)gyroY /8.75; // GYRO_FS_245
 
-	return (float) gyroY;
+	return (float) gyroY*0.02;
 
 }
-
-
 float LSM6DS33_Gyro_Z(void){
 
 
@@ -121,12 +162,13 @@ float LSM6DS33_Gyro_Z(void){
 						100);
 	gyroZ = (OUTZ_H_G << 8) | (OUTZ_L_G);
 
-	gyroZ = (float)gyroZ /70; // GYRO_FS_2000
+	gyroZ = (float)gyroZ /8.75; // GYRO_FS_245
 
-	return (float) gyroZ;
+	return (float) gyroZ*0.02;
 
 
 }
+
 
 
 float LSM6DS33_Acc_X(void){
@@ -153,15 +195,13 @@ float LSM6DS33_Acc_X(void){
 						100);
 	AccX = (OUTX_H_Acc << 8) | (OUTX_L_Acc);
 
-	AccX = (float)AccX /0.244; // FS = ±8
+	AccX = (float)AccX * 0.061; // FS = ±2
 
 	return (float) AccX;
 
 
 
 }
-
-
 float LSM6DS33_Acc_Y(void){
 
 
@@ -187,14 +227,12 @@ float LSM6DS33_Acc_Y(void){
 						100);
 	AccY = (OUTY_H_Acc << 8) | (OUTY_L_Acc);
 
-	AccY = (float)AccY /0.244; // FS = ±8
+	AccY = (float)AccY * 0.061; // FS = ±2
 
 	return (float) AccY;
 
 
 }
-
-
 float LSM6DS33_Acc_Z(void){
 
 	int16_t AccZ;
@@ -218,9 +256,33 @@ float LSM6DS33_Acc_Z(void){
 						100);
 	AccZ = (OUTZ_H_Acc << 8) | (OUTZ_L_Acc);
 
-	AccZ = (float)AccZ /0.244; // FS = ±8
+	AccZ = (float)AccZ * 0.061; // FS = ±2
 
 	return (float) AccZ;
 
 }
+
+
+
+float acc_total_vector(void){
+
+	return sqrt((LSM6DS33_Acc_X()*LSM6DS33_Acc_X())+(LSM6DS33_Acc_Y()*LSM6DS33_Acc_Y())+(LSM6DS33_Acc_Z()*LSM6DS33_Acc_Z()));;
+
+}
+float angle_pitch_acc(void){
+
+	//57.296 = 1 / (3.142 / 180)
+
+	return asin((float)LSM6DS33_Acc_X()/acc_total_vector())* 57.296;
+
+}
+float angle_roll_acc(void){
+
+	return asin((float)LSM6DS33_Acc_Y()/acc_total_vector())* 57.296;
+
+
+}
+
+
+
 
