@@ -4,13 +4,17 @@
 
 2- sensor connect to hi2c1 com. port
 
-3- calc. loop time and assing to dt var.
+3- add init func. in main 
+
+	  LSM6DS33_init();
+
+4- calc. loop time and assing to dt var.
 
 	  dt = (double)(HAL_GetTick() - timer) / 1000000; // Calculate delta time
 	  timer = HAL_GetTick();
     
     
-4- use gyro func like this: 
+5- use gyro func like this: 
     
     gyro_x += (read_data_gyro(1) / 8.75) * dt;
     gyro_y += (read_data_gyro(2) / 8.75) * dt;
