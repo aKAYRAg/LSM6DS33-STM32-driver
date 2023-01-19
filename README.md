@@ -19,7 +19,7 @@
    use acc func like this:
     
     raw data:
-    acc_x =  read_data_acc(1);
+    	  acc_x =  read_data_acc(1);
 	  acc_y =  read_data_acc(2);
 	  acc_z =  read_data_acc(3);
     euler angle:
