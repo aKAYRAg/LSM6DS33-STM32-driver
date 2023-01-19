@@ -17,11 +17,14 @@
     gyro_z += (read_data_gyro(3) / 8.75) * dt;
     
    use acc func like this:
-    
-    raw data:
-    	  acc_x =  read_data_acc(1);
+   	
+   raw data:
+   
+  	  acc_x =  read_data_acc(1);
 	  acc_y =  read_data_acc(2);
 	  acc_z =  read_data_acc(3);
-    euler angle:
+	  
+   euler angle:
+   
 	  pitch_acc = angle_pitch_acc();
 	  roll_acc  = angle_roll_acc();
