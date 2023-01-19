@@ -8,19 +8,19 @@
 
 	  LSM6DS33_init();
 
-4- calc. loop time and assing to dt var.
+4- calc. loop time and assing to dt var.(in loop)
 
 	  dt = (double)(HAL_GetTick() - timer) / 1000000; // Calculate delta time
 	  timer = HAL_GetTick();
     
     
-5- use gyro func like this: 
+5- use gyro func like this:(in loop) 
     
     gyro_x += (read_data_gyro(1) / 8.75) * dt;
     gyro_y += (read_data_gyro(2) / 8.75) * dt;
     gyro_z += (read_data_gyro(3) / 8.75) * dt;
     
-   use acc func like this:
+   use acc func like this:(in loop)
    	
    raw data:
    
